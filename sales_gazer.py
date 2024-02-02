@@ -1,15 +1,16 @@
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.common import exceptions as selenium_exceptions
-import chromedriver_autoinstaller
 from supabase import create_client, Client
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import time
 import math
+from selenium.webdriver.chrome.service import Service
 
-chromedriver_autoinstaller.install()
+chrome_driver_path = r"chromedriver-win32\chromedriver.exe"
+service = Service(executable_path=chrome_driver_path)
 
 
 class EmptyElement:
@@ -117,8 +118,8 @@ def insert_new_data(data: pd.DataFrame, table):
 
         print(f"Row inserted successfully")
 
-        data, count = supabase.table(table).delete().lt("sys_run_date", today).execute()
-        print("Deleted old data with len: ", data, count)
+        # data, count = supabase.table(table).delete().lt("sys_run_date", today).execute()
+        # print("Deleted old data with len: ", data, count)
 
     except Exception as e:
         print(f"Error with row: {e}")
@@ -128,7 +129,7 @@ def insert_new_data(data: pd.DataFrame, table):
 def crawl_data():
     chrome_options = webdriver.ChromeOptions()
     # chrome_options.add_argument("--headless=new")
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
     driver.get("https://salesgazer.com/customer/login/")
     time.sleep(4)
