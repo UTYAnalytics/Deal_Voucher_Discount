@@ -8,8 +8,11 @@ import numpy as np
 import time
 import math
 from selenium.webdriver.chrome.service import Service
+import os
 
-chrome_driver_path = r"chromedriver-win32\chromedriver.exe"
+chrome_driver_path = os.path.join(
+    os.getenv("CI_PROJECT_DIR", ""), "bin", "chromedriver-linux64", "chromedriver"
+)
 service = Service(executable_path=chrome_driver_path)
 
 

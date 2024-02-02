@@ -1,0 +1,4 @@
+selenium
+supabase
+pandas
+python-Levenshtein
