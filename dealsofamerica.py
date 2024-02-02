@@ -1,25 +1,13 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import WebDriverException
 from selenium import webdriver
 from selenium.common import exceptions as selenium_exceptions
 import chromedriver_autoinstaller
-from apify_client import ApifyClient
-from google_img_source_search import ReverseImageSearcher
-import json
-import psycopg2
 from supabase import create_client, Client
-from datetime import datetime, timezone, timedelta
-from fuzzywuzzy import fuzz
-from decimal import Decimal
-from json import JSONEncoder
-import os
-import asyncio
+from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import time
+
 
 chromedriver_autoinstaller.install()
 
@@ -104,7 +92,7 @@ def crawl_data():
     driver.get("https://www.dealsofamerica.com")
     time.sleep(4)
 
-    wait = WebDriverWait(driver, 10)  # Adjust the timeout value as needed
+    # wait = WebDriverWait(driver, 10)  # Adjust the timeout value as needed
 
     seller_link_container = driver.find_element(
         By.XPATH, "/html/body/header/div/div[1]/nav/ul/li[2]/ul/li[2]/ul/li[3]/ul"
