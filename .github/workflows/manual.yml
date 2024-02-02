@@ -1,0 +1,99 @@
+name: Run Selenium On GitHub Action
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 14 * * *'
+
+jobs:
+
+  dealnews:
+    runs-on: ubuntu-latest
+    timeout-minutes: 600000
+    # needs: scrape1  # Wait for scrape1 to complete
+    steps:
+      - name: Checking out repo
+        uses: actions/checkout@v3
+
+      - name: Setting up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Installing dependencies
+        run: |
+          pip install pandas
+          pip install chromedriver-autoinstaller selenium pyvirtualdisplay
+          pip install psycopg2
+          pip install supabase
+          pip install numpy
+      - name: Install xvfb
+        run: sudo apt-get install xvfb
+      - name: Download and install Google Chrome
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb
+          sudo apt-get -f install
+      - name: Running the dealnews script
+        run: python dealnews.py
+
+        
+  dealsofamerica:
+    runs-on: ubuntu-latest
+    timeout-minutes: 600000
+    # needs: scrape1  # Wait for scrape1 to complete
+    steps:
+      - name: Checking out repo
+        uses: actions/checkout@v3
+
+      - name: Setting up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Installing dependencies
+        run: |
+          pip install pandas
+          pip install chromedriver-autoinstaller selenium pyvirtualdisplay
+          pip install psycopg2
+          pip install supabase
+          pip install numpy
+      - name: Install xvfb
+        run: sudo apt-get install xvfb
+      - name: Download and install Google Chrome
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb
+          sudo apt-get -f install
+      - name: Running the dealsofamerica script
+        run: python dealsofamerica.py
+
+  sales_gazer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 600000
+    # needs: scrape1  # Wait for scrape1 to complete
+    steps:
+      - name: Checking out repo
+        uses: actions/checkout@v3
+
+      - name: Setting up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Installing dependencies
+        run: |
+          pip install pandas
+          pip install chromedriver-autoinstaller selenium pyvirtualdisplay
+          pip install psycopg2
+          pip install supabase
+          pip install numpy
+      - name: Install xvfb
+        run: sudo apt-get install xvfb
+      - name: Download and install Google Chrome
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb
+          sudo apt-get -f install
+      - name: Running the sales_gazer script
+        run: python sales_gazer.py
