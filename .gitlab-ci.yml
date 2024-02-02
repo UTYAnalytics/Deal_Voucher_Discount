@@ -1,0 +1,90 @@
+image: python:3.11
+
+stages:
+  - setup
+  - run
+
+setup_dependencies:
+  stage: setup
+  script:
+    - apt-get update -y
+    - apt-get install -y wget unzip libglib2.0-0 libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdbus-1-3 libxkbcommon0 libxdamage1 libxcomposite1 libxrandr2 libgbm1 libasound2 libgtk-3-0
+    # Install Chrome
+    # - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    # - apt install -y ./google-chrome-stable_current_amd64.deb
+    # Install ChromeDriver
+    # - CHROMEDRIVER_VERSION=$(curl https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+    - mkdir -p bin
+    - wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/121.0.6167.85/linux64/chromedriver-linux64.zip
+    - unzip chromedriver-linux64.zip -d bin/
+    - chmod +x bin/chromedriver-linux64/chromedriver
+    - ./bin/chromedriver-linux64/chromedriver --version
+    - google-chrome --version || echo "Google Chrome not found"
+    - whereis google-chrome
+  artifacts:
+    paths:
+      - bin/chromedriver-linux64
+
+dealnews:
+  stage: run
+  script:
+    - apt-get update -y
+    - apt-get install -y libglib2.0-0 libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdbus-1-3 libxkbcommon0 libxdamage1 libxcomposite1 libxrandr2 libgbm1 libasound2 libgtk-3-0 libxss1
+    # Install Chrome
+    - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - apt install -y ./google-chrome-stable_current_amd64.deb
+    - which google-chrome || true # This will print the path of the Chrome binary if it's installed
+    - google-chrome --version || true # This will print the installed Chrome version
+    - whereis google-chrome
+    - google-chrome --version || echo "Google Chrome not found"
+    - ls -la bin/chromedriver-linux64/chromedriver
+    - ./bin/chromedriver-linux64/chromedriver --version
+    - export PATH=$PATH:$CI_PROJECT_DIR/bin/chromedriver-linux64/chromedriver
+    - pip install -r requirements.txt
+    - echo "Running dealnews code"
+    - python3 dealnews.py
+  dependencies:
+    - setup_dependencies
+  timeout: 6h
+dealsofamerica:
+  stage: run
+  script:
+    - apt-get update -y
+    - apt-get install -y libglib2.0-0 libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdbus-1-3 libxkbcommon0 libxdamage1 libxcomposite1 libxrandr2 libgbm1 libasound2 libgtk-3-0 libxss1
+    # Install Chrome
+    - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - apt install -y ./google-chrome-stable_current_amd64.deb
+    - which google-chrome || true # This will print the path of the Chrome binary if it's installed
+    - google-chrome --version || true # This will print the installed Chrome version
+    - whereis google-chrome
+    - google-chrome --version || echo "Google Chrome not found"
+    - ls -la bin/chromedriver-linux64/chromedriver
+    - ./bin/chromedriver-linux64/chromedriver --version
+    - export PATH=$PATH:$CI_PROJECT_DIR/bin/chromedriver-linux64/chromedriver
+    - pip install -r requirements.txt
+    - echo "Running dealsofamerica code"
+    - python3 dealsofamerica.py
+  dependencies:
+    - setup_dependencies
+  timeout: 6h
+sales_gazer:
+  stage: run
+  script:
+    - apt-get update -y
+    - apt-get install -y libglib2.0-0 libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdbus-1-3 libxkbcommon0 libxdamage1 libxcomposite1 libxrandr2 libgbm1 libasound2 libgtk-3-0 libxss1
+    # Install Chrome
+    - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - apt install -y ./google-chrome-stable_current_amd64.deb
+    - which google-chrome || true # This will print the path of the Chrome binary if it's installed
+    - google-chrome --version || true # This will print the installed Chrome version
+    - whereis google-chrome
+    - google-chrome --version || echo "Google Chrome not found"
+    - ls -la bin/chromedriver-linux64/chromedriver
+    - ./bin/chromedriver-linux64/chromedriver --version
+    - export PATH=$PATH:$CI_PROJECT_DIR/bin/chromedriver-linux64/chromedriver
+    - pip install -r requirements.txt
+    - echo "Running sales_gazer code"
+    - python3 sales_gazer.py
+  dependencies:
+    - setup_dependencies
+  timeout: 6h
