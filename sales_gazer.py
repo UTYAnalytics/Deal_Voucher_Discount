@@ -152,11 +152,16 @@ def crawl_data():
     submit_button.click()
     time.sleep(5)
 
-    mail_count = float(
-        driver.find_element(
-            By.XPATH, '//*[@id="inbox-toolbar-toggle-multiple"]/div[3]/span[2]'
-        ).text
-    )
+    mail_count_element = driver.find_element(By.XPATH, '//*[@id="inbox-toolbar-toggle-multiple"]/div[3]/span[2]')
+    mail_count_text = mail_count_element.text.strip()
+
+    if mail_count_text:
+        mail_count = float(mail_count_text)
+        print("Mail count:", mail_count)
+    else:
+        print("Error: Mail count text is empty or not convertible to float.")
+        mail_count = 0  # Set a default value or handle the error according to your needs
+
 
     max_page = math.ceil(mail_count / 200.0)
     print("Mail count: ", mail_count)
