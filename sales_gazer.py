@@ -27,7 +27,7 @@ def find_element_if_exist(parent_element, target_return, *args, **kwargs):
         if target_return is None:
             return child_element
         else:
-            return getattr(child_element, target_return)
+            return child_element.get_attribute(target_return)
     except selenium_exceptions.NoSuchElementException as e:
         return None
 
@@ -189,10 +189,14 @@ def crawl_data():
         print(len(mails))
 
         for mail in mails:
-            seller = mail.find_element(By.CSS_SELECTOR, "td.table-inbox-name").text
+            seller = mail.find_element(
+                By.CSS_SELECTOR, "td.table-inbox-name"
+            ).get_attribute("innerText")
             content = mail.find_element(By.CSS_SELECTOR, "td.table-inbox-message")
-            time_coupon = mail.find_element(By.CSS_SELECTOR, "td.table-inbox-time").text
-            title = content.text
+            time_coupon = mail.find_element(
+                By.CSS_SELECTOR, "td.table-inbox-time"
+            ).get_attribute("innerText")
+            title = content.get_attribute("innerText")
             link = content.find_element(By.CSS_SELECTOR, "a").get_attribute("href")
 
             coupon_data = {}
@@ -200,6 +204,8 @@ def crawl_data():
             coupon_data["title"] = title
             coupon_data["link"] = link
             coupon_data["time_coupon"] = time_coupon
+            # print(coupon_data)
+
             coupons_data.append(coupon_data)
     return coupons_data
 

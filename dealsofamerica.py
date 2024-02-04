@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import time
+
 from pyvirtualdisplay import Display
 
 display = Display(visible=0, size=(800, 600))
@@ -25,7 +26,7 @@ def find_element_if_exist(parent_element, target_return, *args, **kwargs):
         if target_return is None:
             return child_element
         else:
-            return getattr(child_element, target_return)
+            return child_element.get_attribute(target_return)
     except selenium_exceptions.NoSuchElementException as e:
         return None
 
@@ -88,7 +89,7 @@ def insert_new_data(data: pd.DataFrame, table):
 
 def crawl_data():
     chrome_options = webdriver.ChromeOptions()
-    # chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--headless=new")
     driver = webdriver.Chrome(options=chrome_options)
 
     # driver.get("https://www.dealsofamerica.com/walmart-deals.php")
@@ -120,38 +121,37 @@ def crawl_data():
 
             for coupon_div in coupon_div_list:
                 coupon_data = {}
-                # print(coupon_div.get_attribute("outerHTML"))
-                # print(coupon_div.text)
-                # coupon_data["type"] = groups_heading[i]
-                # print(coupon.text)
 
                 title = find_element_if_exist(
                     coupon_div,
-                    "text",
+                    "innerText",
                     By.CSS_SELECTOR,
                     "section > header > div.title > a",
                 )
                 link = find_element_if_exist(
-                    coupon_div, None, By.CSS_SELECTOR, "section > footer > a"
-                ).get_attribute("href")
+                    coupon_div, "href", By.CSS_SELECTOR, "section > footer > a"
+                )
 
                 sales_price = find_element_if_exist(
                     coupon_div,
-                    "text",
+                    "innerText",
                     By.CSS_SELECTOR,
                     "div > div > span.our-price",
                 )
                 original_price = find_element_if_exist(
-                    coupon_div, "text", By.CSS_SELECTOR, "div > div > span.list-price"
+                    coupon_div,
+                    "innerText",
+                    By.CSS_SELECTOR,
+                    "div > div > span.list-price",
                 )
                 other_benefic = find_element_if_exist(
-                    coupon_div, "text", By.CSS_SELECTOR, "ul > li > span.cpriceb"
+                    coupon_div, "innerText", By.CSS_SELECTOR, "ul > li > span.cpriceb"
                 )
                 # other_benefic = " + ".join(other_benefic.split(" + ")[1:])
 
                 time_coupon = find_element_if_exist(
                     coupon_div,
-                    "text",
+                    "innerText",
                     By.CSS_SELECTOR,
                     "section > header > div.store_time_div > time",
                 )
@@ -163,16 +163,7 @@ def crawl_data():
                 coupon_data["other_benefic"] = other_benefic
                 coupon_data["time_coupon"] = time_coupon
                 coupon_data["seller"] = seller_name
-
                 # print(coupon_data)
-
-                # print("title: ", title_element.text)
-                # print("link: ", link)
-                # print("sales_price: ", sales_price)
-                # print("original_price: ", original_price)
-                # print("other_benefic: ", other_benefic)
-                # print()
-                # print()
 
                 coupons_data.append(coupon_data)
             print("Len coupons data: ", len(coupons_data))

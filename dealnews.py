@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import time
+
 from pyvirtualdisplay import Display
 
 display = Display(visible=0, size=(800, 600))
@@ -25,7 +26,7 @@ def find_element_if_exist(parent_element, target_return, *args, **kwargs):
         if target_return is None:
             return child_element
         else:
-            return getattr(child_element, target_return)
+            return child_element.get_attribute(target_return)
     except selenium_exceptions.NoSuchElementException as e:
         return None
 
@@ -86,7 +87,7 @@ def insert_new_data(data: pd.DataFrame, table):
 
 def crawl_data():
     chrome_options = webdriver.ChromeOptions()
-    # chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--headless=new")
     driver = webdriver.Chrome(options=chrome_options)
 
     order = "?group=type&sort=time"
@@ -115,7 +116,7 @@ def crawl_data():
         time.sleep(4)
 
         count_element = driver.find_element(By.CSS_SELECTOR, "div.count")
-        count = count_element.text.split(" ")[0]
+        count = count_element.get_attribute("innerText").split(" ")[0]
         if int(count) == 0:
             continue
         # Adjust the timeout value as needed
@@ -139,7 +140,10 @@ def crawl_data():
         section_headings = driver.find_elements(
             By.CSS_SELECTOR, ".override-anchor-color"
         )
-        groups_heading = [heading.text.split("(")[0] for heading in section_headings]
+        groups_heading = [
+            heading.get_attribute("innerText").split("(")[0]
+            for heading in section_headings
+        ]
         print(groups_heading)
 
         group_content_list = driver.find_elements(By.CSS_SELECTOR, ".footprint-group")
@@ -155,11 +159,11 @@ def crawl_data():
             for coupon_div in coupon_div_list:
                 coupon_data = {}
                 coupon_data["type"] = groups_heading[i]
-                # print(coupon.text)
+                # print(coupon.get_attribute("innerText"))
 
                 time_coupon = find_element_if_exist(
                     coupon_div,
-                    "text",
+                    "innerText",
                     By.CSS_SELECTOR,
                     "div.key-attribute.limit-height.limit-height-large-1.limit-height-small-1",
                 )
@@ -174,13 +178,13 @@ def crawl_data():
                     continue
                 sales_price = find_element_if_exist(
                     sales_element,
-                    "text",
+                    "innerText",
                     By.CSS_SELECTOR,
                     ".callout.limit-height.limit-height-large-1.limit-height-small-1",
                 )
 
                 original_price = find_element_if_exist(
-                    sales_element, "text", By.CSS_SELECTOR, ".callout-comparison"
+                    sales_element, "innerText", By.CSS_SELECTOR, ".callout-comparison"
                 )
                 if original_price is not None:
                     sales_price = sales_price.replace(original_price, "")
@@ -189,10 +193,10 @@ def crawl_data():
                 sales_price = sales_price
 
                 other_benefic = find_element_if_exist(
-                    sales_element, "text", By.CSS_SELECTOR, ".secondary-callout"
+                    sales_element, "innerText", By.CSS_SELECTOR, ".secondary-callout"
                 )
 
-                coupon_data["title"] = title_element.text
+                coupon_data["title"] = title_element.get_attribute("innerText")
                 coupon_data["link"] = link
                 coupon_data["sales"] = sales_price
                 coupon_data["original_price"] = original_price
@@ -202,7 +206,7 @@ def crawl_data():
 
                 # print(coupon_data)
 
-                # print("title: ", title_element.text)
+                # print("title: ", title_element.get_attribute("innerText"))
                 # print("link: ", link)
                 # print("sales_price: ", sales_price)
                 # print("original_price: ", original_price)
@@ -211,6 +215,7 @@ def crawl_data():
                 # print()
 
                 coupons_data.append(coupon_data)
+
     return coupons_data
 
 
