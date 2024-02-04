@@ -78,8 +78,8 @@ def insert_new_data(data: pd.DataFrame, table):
 
         print(f"Row inserted successfully")
 
-        data, count = supabase.table(table).delete().lt("sys_run_date", today).execute()
-        print("Deleted old data with len: ", data, count)
+        # data, count = supabase.table(table).delete().lt("sys_run_date", today).execute()
+        # print("Deleted old data with len: ", data, count)
 
     except Exception as e:
         print(f"Error with row: {e}")

@@ -121,8 +121,8 @@ def insert_new_data(data: pd.DataFrame, table):
 
         print(f"Row inserted successfully")
 
-        data, count = supabase.table(table).delete().lt("sys_run_date", today).execute()
-        print("Deleted old data with len: ", data, count)
+        # data, count = supabase.table(table).delete().lt("sys_run_date", today).execute()
+        # print("Deleted old data with len: ", data, count)
 
     except Exception as e:
         print(f"Error with row: {e}")
@@ -152,7 +152,9 @@ def crawl_data():
     submit_button.click()
     time.sleep(5)
 
-    mail_count_element = driver.find_element(By.XPATH, '//*[@id="inbox-toolbar-toggle-multiple"]/div[3]/span[2]')
+    mail_count_element = driver.find_element(
+        By.XPATH, '//*[@id="inbox-toolbar-toggle-multiple"]/div[3]/span[2]'
+    )
     mail_count_text = mail_count_element.text.strip()
 
     if mail_count_text:
@@ -160,8 +162,9 @@ def crawl_data():
         print("Mail count:", mail_count)
     else:
         print("Error: Mail count text is empty or not convertible to float.")
-        mail_count = 0  # Set a default value or handle the error according to your needs
-
+        mail_count = (
+            0  # Set a default value or handle the error according to your needs
+        )
 
     max_page = math.ceil(mail_count / 200.0)
     print("Mail count: ", mail_count)
