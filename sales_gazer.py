@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import time
 import math
+
 from pyvirtualdisplay import Display
 
 display = Display(visible=0, size=(800, 600))
@@ -131,7 +132,8 @@ def insert_new_data(data: pd.DataFrame, table):
 
 def crawl_data():
     chrome_options = webdriver.ChromeOptions()
-    # chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--headless=new")
+    # chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(options=chrome_options)
 
     driver.get("https://salesgazer.com/customer/login/")
@@ -155,16 +157,17 @@ def crawl_data():
     mail_count_element = driver.find_element(
         By.XPATH, '//*[@id="inbox-toolbar-toggle-multiple"]/div[3]/span[2]'
     )
-    mail_count_text = mail_count_element.text.strip()
+
+    mail_count_text = mail_count_element.get_attribute("innerText").strip()
+    print("mail_count_text: ", mail_count_text)
 
     if mail_count_text:
         mail_count = float(mail_count_text)
-        print("Mail count:", mail_count)
+        print("Get mail count successfully")
     else:
         print("Error: Mail count text is empty or not convertible to float.")
-        mail_count = (
-            0  # Set a default value or handle the error according to your needs
-        )
+        # Set a default value or handle the error according to your needs
+        mail_count = 0
 
     max_page = math.ceil(mail_count / 200.0)
     print("Mail count: ", mail_count)
