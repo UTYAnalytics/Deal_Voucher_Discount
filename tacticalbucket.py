@@ -12,10 +12,10 @@ import pandas as pd
 import numpy as np
 import time
 
-# from pyvirtualdisplay import Display
+from pyvirtualdisplay import Display
 
-# display = Display(visible=0, size=(800, 600))
-# display.start()
+display = Display(visible=0, size=(800, 600))
+display.start()
 
 chromedriver_autoinstaller.install()
 
