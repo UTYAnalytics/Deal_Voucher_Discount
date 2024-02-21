@@ -12,10 +12,10 @@ import pandas as pd
 import numpy as np
 import time
 
-from pyvirtualdisplay import Display
+# from pyvirtualdisplay import Display
 
-display = Display(visible=0, size=(800, 600))
-display.start()
+# display = Display(visible=0, size=(800, 600))
+# display.start()
 
 chromedriver_autoinstaller.install()
 
@@ -159,7 +159,7 @@ def crawl_data():
                     text = cell_data.get_attribute("innerText")
                     coupon_data.append(text)
                     # print(text)
-
+                    continue
             coupons_data.append(coupon_data)
             # print(coupon_data)
             # break
