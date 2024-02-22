@@ -12,10 +12,10 @@ import pandas as pd
 import numpy as np
 import time
 
-# from pyvirtualdisplay import Display
+from pyvirtualdisplay import Display
 
-# display = Display(visible=0, size=(800, 600))
-# display.start()
+display = Display(visible=0, size=(800, 600))
+display.start()
 
 chromedriver_autoinstaller.install()
 
@@ -150,6 +150,7 @@ def crawl_data():
                         link = driver.current_url
 
                         driver.close()
+                        time.sleep(5)
                         driver.switch_to.window(driver.window_handles[0])
 
                     coupon_data.append(link)
