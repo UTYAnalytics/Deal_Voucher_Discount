@@ -11,13 +11,14 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import time
+from selenium.common.exceptions import UnexpectedAlertPresentException
 
-from pyvirtualdisplay import Display
+# from pyvirtualdisplay import Display
 
-display = Display(visible=0, size=(800, 600))
-display.start()
+# display = Display(visible=0, size=(800, 600))
+# display.start()
 
-chromedriver_autoinstaller.install()
+# chromedriver_autoinstaller.install()
 
 
 class EmptyElement:
@@ -147,7 +148,11 @@ def crawl_data():
                         driver.switch_to.window(driver.window_handles[-1])
                         time.sleep(5)
                         # Update new href
-                        link = driver.current_url
+                        try:
+                            link = driver.current_url
+                        except UnexpectedAlertPresentException as e:
+                            print(f"Handling unexpected alert: {e.alert_text}")
+                            driver.switch_to.alert.accept()  # or use .dismiss() depending on the alert
 
                         driver.close()
                         time.sleep(5)
