@@ -70,7 +70,17 @@ def insert_new_data(data: pd.DataFrame, table):
 
             # json_list = data.to_dict(orient="records")
             # Insert the rows into the database using executemany
-            response = supabase.table(table).insert(json_list).execute()
+            # response = supabase.table(table).insert(json_list).execute()
+
+            response = (
+                supabase.table(table)
+                .upsert(
+                    json_list,
+                    ignore_duplicates=True,
+                    on_conflict="title, link, sales, original_price",
+                )
+                .execute()
+            )
 
             if hasattr(response, "error") and response.error is not None:
                 print(f"Error inserting rows: {response.error}")
@@ -109,7 +119,7 @@ def crawl_data():
         seller = link.split("/")[-2]
         print("Link: ", link)
         print("Seller: ", seller)
-        if seller in ["Amazon", "Walmart", "online-stores"]:
+        if seller in ["Amazon", "online-stores"]:
             continue
 
         driver.get(link + order)

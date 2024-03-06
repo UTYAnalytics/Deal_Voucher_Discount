@@ -12,6 +12,13 @@ import pandas as pd
 import numpy as np
 import time
 from selenium.common.exceptions import UnexpectedAlertPresentException
+from selenium.common.exceptions import InvalidSessionIdException
+
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.alert import Alert
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import NoAlertPresentException, TimeoutException
+
 
 from pyvirtualdisplay import Display
 
@@ -23,6 +30,24 @@ chromedriver_autoinstaller.install()
 
 class EmptyElement:
     pass
+
+
+# Refactored function for handling alerts
+def handle_alert(driver, timeout=10):
+    try:
+        WebDriverWait(driver, timeout).until(
+            EC.alert_is_present(), "Waiting for alert to appear."
+        )
+        alert = driver.switch_to.alert
+        alert_text = alert.text
+        print(f"Alert found: {alert_text}")
+        alert.accept()
+        print("Alert dismissed")
+    except TimeoutException:
+        print("No alert appeared within the timeout period.")
+    except NoAlertPresentException:
+        # If no alert is present at the moment of switching
+        pass
 
 
 def find_element_if_exist(parent_element, target_return, *args, **kwargs):
@@ -60,8 +85,16 @@ def insert_new_data(data: pd.DataFrame, table):
 
             # json_list = data.to_dict(orient="records")
             # Insert the rows into the database using executemany
-            response = supabase.table(table).insert(json_list).execute()
-
+            # response = supabase.table(table).insert(json_list).execute()
+            response = (
+                supabase.table(table)
+                .upsert(
+                    json_list,
+                    ignore_duplicates=True,
+                    on_conflict="added, end_date, details, discount",
+                )
+                .execute()
+            )
             if hasattr(response, "error") and response.error is not None:
                 print(f"Error inserting rows: {response.error}")
 
@@ -137,29 +170,32 @@ def crawl_data():
 
                     link = link_element.get_attribute("href")
                     if "api" in link:
+                        original_window = driver.current_window_handle
                         # print("Open new tab to get redirect URL")
                         ActionChains(driver).key_down(Keys.CONTROL).click(
                             link_element
                         ).key_up(Keys.CONTROL).perform()
                         time.sleep(1.5)
 
-                        # After opening the link in a new tab, you can switch to the new tab
-                        # Get window handles to switch between tabs
-                        driver.switch_to.window(driver.window_handles[-1])
-                        time.sleep(5)
-                        # Update new href
-                        try:
-                            link = driver.current_url
-                        except UnexpectedAlertPresentException as e:
-                            print(f"Handling unexpected alert: {e.alert_text}")
-                            driver.switch_to.alert.accept()  # or use .dismiss() depending on the alert
+                        ## Switch to new tab
+                        new_window = [
+                            window
+                            for window in driver.window_handles
+                            if window != original_window
+                        ]
+                        if new_window:
+                            driver.switch_to.window(new_window[0])
+                            time.sleep(5)
+                            handle_alert(driver)  # Handle any unexpected alert
 
-                        driver.close()
-                        time.sleep(5)
-                        driver.switch_to.window(driver.window_handles[0])
+                            # Perform operations in the new tab
+                            link = driver.current_url
+
+                            # Close the new tab and switch back to the original window
+                            driver.close()
+                            driver.switch_to.window(original_window)
 
                     coupon_data.append(link)
-                    # print(link)
 
                 except selenium_exceptions.NoSuchElementException:
                     text = cell_data.get_attribute("innerText")

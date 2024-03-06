@@ -72,8 +72,16 @@ def insert_new_data(data: pd.DataFrame, table):
 
             # json_list = data.to_dict(orient="records")
             # Insert the rows into the database using executemany
-            response = supabase.table(table).insert(json_list).execute()
-
+            # response = supabase.table(table).insert(json_list).execute()
+            response = (
+                supabase.table(table)
+                .upsert(
+                    json_list,
+                    ignore_duplicates=True,
+                    on_conflict="title, link, time_coupon",
+                )
+                .execute()
+            )
             if hasattr(response, "error") and response.error is not None:
                 print(f"Error inserting rows: {response.error}")
 
