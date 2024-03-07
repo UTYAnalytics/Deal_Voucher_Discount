@@ -130,4 +130,7 @@ jobs:
           sudo dpkg -i google-chrome-stable_current_amd64.deb
           sudo apt-get -f install
       - name: Running the tacticalbucket script
-        run: python tacticalbucket.py
+        run: |
+          python tacticalbucket.py
+          python update_coupons_sheet.py
+        
