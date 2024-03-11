@@ -123,6 +123,7 @@ jobs:
           pip install numpy
           pip install Pyarrow
           pip install google-api-python-client
+          pip install google
       - name: Install xvfb
         run: sudo apt-get install xvfb
       - name: Download and install Google Chrome
